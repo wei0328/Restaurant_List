@@ -1,8 +1,9 @@
 const express = require('express');
 const exphbs = require('express-handlebars');
 const mongoose=require('mongoose')
-const restaurantList=require('./restaurant.json');
-
+const Restaurant=require('./models/restaurant.js');
+const bodyParser = require('body-parser');
+const restaurant = require('./models/restaurant.js');
 const app = express();
 const port = 3000;
 
@@ -24,26 +25,97 @@ app.set('view engine', '.handlebars');
 // setting static files
 app.use(express.static('public'))
 
+app.use(bodyParser.urlencoded({ extended: true }))
+
 app.get('/',(req,res)=>{
-    res.render('index',{restaurants:restaurantList.results});
-
+    Restaurant.find()
+        .lean()
+        .then(restaurants=>res.render('index',{restaurants:restaurants}))
+        .catch(error=>console.error(error))
 })
 
-app.get('/restaurants/:restaurant_id',(req,res)=>{
-    const restaurant=restaurantList.results.find(res=>{
-        return res.id.toString()===req.params.restaurant_id
-    })
-    res.render('show',{res:restaurant})
+app.get('/restaurants/create',(req,res)=>{
+    return res.render('create')
 })
+
+app.get('/restaurants/:id',(req,res)=>{
+    const id=req.params.id
+    return Restaurant.findById(id)
+        .lean()
+        .then((restaurant)=>res.render('show',{restaurant}))
+        .catch(error=>console.error(error))
+})
+
+
 
 app.get('/search',(req,res)=>{
-    console.log(req)
     const keyword=req.query.keyword
-    const restaurant=restaurantList.results.filter(r=>{
-        return r.name.toLocaleLowerCase().includes(keyword.toLocaleLowerCase())
-    })
-    res.render('index',{restaurants:restaurant, keywords:keyword})
+    Restaurant.find({'name':{ $regex: keyword}})
+        .lean()
+        .then(restaurants=>res.render('index',{restaurants}))
+        .catch(error=>console.error(error))
 })
+
+
+
+
+app.get('/restaurants/:id/edit', (req,res)=>{
+    const id=req.params.id
+    return Restaurant.findById(id)
+    .lean()
+    .then(restaurant=>res.render('edit',{restaurant}))
+    .catch(error=>console.error(error))
+})
+
+app.post('/restaurants',(req,res)=>{
+    const name=req.body.name
+    const name_en=req.body.name_en
+    const category=req.body.category
+    const image=req.body.image
+    const location=req.body.location
+    const phone=req.body.phone
+    const google_map=req.body.google_map
+    const rating=req.body.rating
+    const description=req.body.description
+    return Restaurant.create({
+        name:name,
+        name_en:name_en,
+        category:category,
+        image:image,
+        location:location,
+        phone:phone,
+        google_map:google_map,
+        rating:rating,
+        description:description
+    })
+        .then(()=>res.redirect('/'))
+        .catch(error=>console.error(error))
+
+})
+
+app.post('/restaurants/:id/edit',(req,res)=>{
+    const id=req.params.id
+    const name=req.body.name
+    return Restaurant.findById(id)
+        .then(restaurant=>{
+            restaurant.name=name
+            return restaurant.save()
+        })
+        .then(()=>res.redirect(`/restaurants/${id}`))
+        .catch(error=>console.error(error))
+})
+
+
+
+app.post('/restaurants/:id/delete',(req,res)=>{
+    const id=req.params.id
+    return Restaurant.findById(id)
+        .then(restaurant=>restaurant.deleteOne())
+        .then(()=>res.redirect('/'))
+        .catch(error=>console.error(error))
+})
+
+
 
 app.listen(port,()=>{
     console.log(`its listened on ${port}`)
