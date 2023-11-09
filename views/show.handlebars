@@ -37,11 +37,15 @@
       <img class="rounded mx-auto d-block mb-4 w-100" src={{restaurant.image}} alt={{restaurant.name}} style="max-width: 600px;">
     </div>
     <div>
-      <a href="/">back</a>
-      <a href="/restaurants/{{restaurant._id}}/edit" type="submit">Edit</a>
-      <form action="/restaurants/{{restaurant._id}}/delete" method='post' style="display:inline;">
-        <button class="btn btn-major rounded" type="submit">Delete</button>
+      <button type="button" class="btn btn-outline-dark btn-sm">
+        <a href="/restaurants/{{restaurant._id}}/edit" type="submit">Edit</a>
+      </button>
+      <form action="/restaurants/{{restaurant._id}}?_method=DELETE" method='post' style="display:inline;">
+        <button type="submit" class="btn btn-outline-dark btn-sm">Delete</button>
       </form>
+      <button type="button" class="btn btn-outline-dark btn-sm">
+        <a href="/">back</a>
+      </button>
     </div>
     
   </div>

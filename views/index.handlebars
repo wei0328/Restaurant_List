@@ -1,28 +1,45 @@
+              
+
 <!-- search bar -->
 <div class="container search-bar">
   <div class="search-bar-outer">
     <div class="search-bar-inner">
       <form action="/search">
-        <h4 class="mb-2">尋找餐廳：</h4>
-        <div class="input-group">
-          <input type="text" name="keyword" class="form-control" placeholder="輸入餐廳、分類" aria-label="Restaurant Name..." aria-describedby="search-button" value="{{keyword}}">
-          <div class="input-group-append">
-            <button class="btn btn-major rounded mr-2" type="submit" id="search-button">
-              <i class="fas fa-search"></i>
-            </button>
-            <a href="/restaurants/create" class="btn btn-major rounded text-white" type="submit" id="create-button">
-              <i class="fa fa-plus" aria-hidden="true"></i>
-            </a>
+        <div class="row justify-content-around">
+          <div class="input-group mb-3 col-6">
+            <input type="text" name="keyword" class="form-control" placeholder="輸入餐廳、分類" aria-label="Restaurant Name..." aria-describedby="search-button" value="{{keyword}}">
+            <div>
+              <button class="btn btn-outline-secondary" type="submit" id="search-button">
+                <i class="fas fa-search"></i>
+              </button>
+            </div>
+          </div>  
+          <div>
+            <select name="sortBy" id="inputSort" class="form-control" onchange="action='';submit();">
+              <option value="-_id" selected>new to old</option>
+              <option value="-rating" {{#if (eq sortBy '-rating' )}} selected {{/if}}>Rate:high to low</option>
+              <option value="category" {{#if (eq sortBy 'category' )}} selected {{/if}}>Category</option>
+              <option value="location" {{#if (eq sortBy 'location' )}} selected {{/if}}>Location</option>
+            </select>
           </div>
         </div>
+          
+          
       </form>
+      
+
+
+
     </div>
   </div>
+  
 </div>
+
+
 
 <!-- restaurant list -->
 <div class="container mt-5">
-  <div class="row">
+  <div class="row justify-content-around">
     <div class="col-md-10 col-12 ">
       <div class="card-columns">
         {{#each restaurants}}
@@ -41,9 +58,19 @@
                 <i class="fas fa-star fa-xs"></i>
                 
               </span>
-              <a href="/restaurants/{{this._id}}/edit" type="submit">Edit</a>
-              <form action="/restaurants/{{this._id}}/delete" method='post' style="display:inline;">
-                  <button class="btn btn-major rounded" type="submit">Delete</button>
+
+              <div class="btn-group " role="group" aria-label="Basic outlined example">
+                <div>
+                  <button type="button" class="btn btn-outline-dark btn-sm">
+                    <a href="/restaurants/{{this._id}}/edit" type="submit">Edit</a>
+                  </button>
+                  <form action="/restaurants/{{this._id}}?_method=DELETE" method='post' style="display:inline;">
+                    <button type="submit" class="btn btn-outline-dark btn-sm">Delete</button>
+                  </form>
+                </div>
+                
+                
+              </div>
 
               </form>
             </div>
