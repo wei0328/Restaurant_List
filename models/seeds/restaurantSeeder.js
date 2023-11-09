@@ -1,17 +1,9 @@
-const mongoose=require('mongoose')
 const Restaurant=require('../restaurant')
 const restaurantList=require('../restaurant.json')
+const db=require('../../config/mondoose')
 
-mongoose.connect('mongodb://127.0.0.1:27017/restaurant')
-
-const db=mongoose.connection
-
-db.on('error',()=>{
-    console.log('mongodb error!')
-})
 
 db.once('open',()=>{
-    console.log('mongodb connected!')
     for(let i=0; i<restaurantList.results.length;i++){
         Restaurant.create({
             name: restaurantList.results[i].name,

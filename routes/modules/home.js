@@ -12,4 +12,12 @@ router.get('/',(req,res)=>{
     console.log(req.query)
 })
 
+router.get('/search',(req,res)=>{
+    const keyword=req.query.keyword
+    Restaurant.find({'name':{ $regex: keyword}})
+        .lean()
+        .then(restaurants=>res.render('index',{restaurants}))
+        .catch(error=>console.error(error))
+})
+
 module.exports=router
